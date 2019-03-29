@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hyj.mapper.AlcRefundMapper">
+  <resultMap id="BaseResultMap" type="com.hyj.entity.AlcRefund">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="busType" jdbcType="VARCHAR" property="bustype" />
+    <result column="subType" jdbcType="VARCHAR" property="subtype" />
+    <result column="workOrderNum" jdbcType="VARCHAR" property="workordernum" />
+    <result column="billUserNum" jdbcType="VARCHAR" property="billusernum" />
+    <result column="spCode" jdbcType="VARCHAR" property="spcode" />
+    <result column="busCode" jdbcType="VARCHAR" property="buscode" />
+    <result column="chargeType" jdbcType="VARCHAR" property="chargetype" />
+    <result column="serviceUsageTime" jdbcType="VARCHAR" property="serviceusagetime" />
+    <result column="refundTime" jdbcType="VARCHAR" property="refundtime" />
+    <result column="refundAmount" jdbcType="VARCHAR" property="refundamount" />
+    <result column="contentId" jdbcType="VARCHAR" property="contentid" />
+    <result column="hirdPartyLogo" jdbcType="VARCHAR" property="hirdpartylogo" />
+    <result column="serialNum" jdbcType="VARCHAR" property="serialnum" />
+    <result column="duplicateKey1" jdbcType="VARCHAR" property="duplicatekey1" />
+    <result column="duplicateKey2" jdbcType="VARCHAR" property="duplicatekey2" />
+    <result column="orderMode" jdbcType="VARCHAR" property="ordermode" />
+    <result column="rechargeSeqNum" jdbcType="VARCHAR" property="rechargeseqnum" />
+    <result column="uAttriProvCode" jdbcType="VARCHAR" property="uattriprovcode" />
+    <result column="paymentMet" jdbcType="VARCHAR" property="paymentmet" />
+    <result column="ChannelNum" jdbcType="VARCHAR" property="channelnum" />
+    <result column="creationTime" jdbcType="VARCHAR" property="creationtime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from alc_refund
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hyj.entity.AlcRefund">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into alc_refund (busType, subType, workOrderNum, 
+      billUserNum, spCode, busCode, 
+      chargeType, serviceUsageTime, refundTime, 
+      refundAmount, contentId, hirdPartyLogo, 
+      serialNum, duplicateKey1, duplicateKey2, 
+      orderMode, rechargeSeqNum, uAttriProvCode, 
+      paymentMet, ChannelNum, creationTime
+      )
+    values (#{bustype,jdbcType=VARCHAR}, #{subtype,jdbcType=VARCHAR}, #{workordernum,jdbcType=VARCHAR}, 
+      #{billusernum,jdbcType=VARCHAR}, #{spcode,jdbcType=VARCHAR}, #{buscode,jdbcType=VARCHAR}, 
+      #{chargetype,jdbcType=VARCHAR}, #{serviceusagetime,jdbcType=VARCHAR}, #{refundtime,jdbcType=VARCHAR}, 
+      #{refundamount,jdbcType=VARCHAR}, #{contentid,jdbcType=VARCHAR}, #{hirdpartylogo,jdbcType=VARCHAR}, 
+      #{serialnum,jdbcType=VARCHAR}, #{duplicatekey1,jdbcType=VARCHAR}, #{duplicatekey2,jdbcType=VARCHAR}, 
+      #{ordermode,jdbcType=VARCHAR}, #{rechargeseqnum,jdbcType=VARCHAR}, #{uattriprovcode,jdbcType=VARCHAR}, 
+      #{paymentmet,jdbcType=VARCHAR}, #{channelnum,jdbcType=VARCHAR}, #{creationtime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.hyj.entity.AlcRefund">
+    update alc_refund
+    set busType = #{bustype,jdbcType=VARCHAR},
+      subType = #{subtype,jdbcType=VARCHAR},
+      workOrderNum = #{workordernum,jdbcType=VARCHAR},
+      billUserNum = #{billusernum,jdbcType=VARCHAR},
+      spCode = #{spcode,jdbcType=VARCHAR},
+      busCode = #{buscode,jdbcType=VARCHAR},
+      chargeType = #{chargetype,jdbcType=VARCHAR},
+      serviceUsageTime = #{serviceusagetime,jdbcType=VARCHAR},
+      refundTime = #{refundtime,jdbcType=VARCHAR},
+      refundAmount = #{refundamount,jdbcType=VARCHAR},
+      contentId = #{contentid,jdbcType=VARCHAR},
+      hirdPartyLogo = #{hirdpartylogo,jdbcType=VARCHAR},
+      serialNum = #{serialnum,jdbcType=VARCHAR},
+      duplicateKey1 = #{duplicatekey1,jdbcType=VARCHAR},
+      duplicateKey2 = #{duplicatekey2,jdbcType=VARCHAR},
+      orderMode = #{ordermode,jdbcType=VARCHAR},
+      rechargeSeqNum = #{rechargeseqnum,jdbcType=VARCHAR},
+      uAttriProvCode = #{uattriprovcode,jdbcType=VARCHAR},
+      paymentMet = #{paymentmet,jdbcType=VARCHAR},
+      ChannelNum = #{channelnum,jdbcType=VARCHAR},
+      creationTime = #{creationtime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, busType, subType, workOrderNum, billUserNum, spCode, busCode, chargeType, 
+    serviceUsageTime, refundTime, refundAmount, contentId, hirdPartyLogo, serialNum, 
+    duplicateKey1, duplicateKey2, orderMode, rechargeSeqNum, uAttriProvCode, paymentMet, 
+    ChannelNum, creationTime
+    from alc_refund
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, busType, subType, workOrderNum, billUserNum, spCode, busCode, chargeType, 
+    serviceUsageTime, refundTime, refundAmount, contentId, hirdPartyLogo, serialNum, 
+    duplicateKey1, duplicateKey2, orderMode, rechargeSeqNum, uAttriProvCode, paymentMet, 
+    ChannelNum, creationTime
+    from alc_refund
+  </select>
+  <select id = "geTppRefundByOrder_id" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select SPCODE,BUSCODE,CHARGETYPE,REFUNDTIME,REFUNDAMOUNT,CONTENTID
+		from alc_refund
+		where DUPLICATEKEY2 =#{order_id}
+	</select>
+  <select id = "geTppRefundsByOrder_id" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select SPCODE,BUSCODE,CHARGETYPE,REFUNDTIME,REFUNDAMOUNT,CONTENTID
+		from alc_refund
+		where DUPLICATEKEY2 =#{order_id}
+	</select>
+  <select id = "geTppRefundForMapByOrder_id" resultType="java.util.HashMap" parameterType="java.lang.String">
+		select SPCODE,BUSCODE,CHARGETYPE,REFUNDTIME,REFUNDAMOUNT,CONTENTID
+		from alc_refund
+		where DUPLICATEKEY2 =#{order_id}
+	</select>
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:P="http://www.springframework.org/schema/util" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <context:property-placeholder location="classpath:properties/redis.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:properties/redisSentinel.properties" ignore-unresolvable="true"/>
+
+    <!--配置数据源-->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!-- 最大空闲数 -->
+        <property name="maxIdle" value="${redis.maxIdle}" />
+        <!-- 最大空连接数 -->
+        <property name="maxTotal" value="${redis.maxTotal}" />
+        <!-- 最大等待时间 -->
+        <property name="maxWaitMillis" value="${redis.maxWaitMillis}" />
+        <!-- 连接超时时是否阻塞，false时报异常,ture阻塞直到超时, 默认true -->
+        <property name="blockWhenExhausted" value="${redis.blockWhenExhausted}" />
+        <!-- 返回连接时，检测连接是否成功 -->
+        <property name="testOnBorrow" value="${redis.testOnBorrow}" />
+    </bean>
+    <bean id="redisPassword" class="org.springframework.data.redis.connection.RedisPassword">
+        <constructor-arg index="0" value="${redis.password}"/>
+    </bean>
+    <!--单机-->
+    <!--<bean id="redisStandaloneConfiguration" class="org.springframework.data.redis.connection.RedisStandaloneConfiguration">-->
+        <!--<property name="port" value="${redis.port}"/>-->
+        <!--<property name="hostName" value="${redis.host}"/>-->
+        <!--&lt;!&ndash;<property name="password" ref="redisPassword"/>&ndash;&gt;-->
+        <!--<property name="database" value="0"/>-->
+    <!--</bean>-->
+    <!--主从哨兵模式-->
+    <bean id="sentinelConfiguration" class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
+        <!--<property name="master" value="${im.hs.server.redis.sentinel.masterName}"/>-->
+        <property name="master">
+            <bean class="org.springframework.data.redis.connection.RedisNode">
+                <property name="name" value="${im.hs.server.redis.sentinel.masterName}"/>
+            </bean>
+        </property>
+        <property name="sentinels">
+            <set>
+                <bean class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${im.hs.server.redis.sentinel3.host}"/>
+                    <constructor-arg name="port" value="${im.hs.server.redis.sentinel3.port}"/>
+                </bean>
+                <bean class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${im.hs.server.redis.sentinel1.host}"/>
+                    <constructor-arg name="port" value="${im.hs.server.redis.sentinel1.port}"/>
+                </bean>
+                <bean class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${im.hs.server.redis.sentinel2.host}"/>
+                    <constructor-arg name="port" value="${im.hs.server.redis.sentinel2.port}"/>
+                </bean>
+
+            </set>
+        </property>
+    </bean>
+
+    <!--数据库连接池管理工厂-->
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <!--<constructor-arg name="standaloneConfig" ref="redisStandaloneConfiguration"/>-->
+        <constructor-arg name="sentinelConfig" ref="sentinelConfiguration"/>
+        <constructor-arg name="poolConfig" ref="jedisPoolConfig"/>
+    </bean>
+    <!-- Redis 序列化 -->
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+    <bean id="jsonRedisSerializer" class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"/>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory"/>
+        <property name="keySerializer" ref="stringRedisSerializer"/>
+        <property name="valueSerializer" ref="jsonRedisSerializer"/>
+        <property name="hashKeySerializer" ref="stringRedisSerializer"/>
+        <property name="hashValueSerializer" ref="jsonRedisSerializer"/>
+    </bean>
+    <bean id="StringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <constructor-arg name="connectionFactory" ref="jedisConnectionFactory"/>
+        <property name="keySerializer" ref="stringRedisSerializer"/>
+        <property name="valueSerializer" ref="jsonRedisSerializer"/>
+        <property name="hashKeySerializer" ref="stringRedisSerializer"/>
+        <property name="hashValueSerializer" ref="jsonRedisSerializer"/>
+    </bean>
+</beans>
